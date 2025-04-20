@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Birthdays - Birthday Reminder App</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-10 offset-md-1">
+                <div class="card">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h2 class="mb-0">All Birthdays</h2>
+                        <a href="/" class="btn btn-light">Add New Birthday</a>
+                    </div>
+                    <div class="card-body">
+                        <% if (typeof error !== 'undefined') { %>
+                            <div class="alert alert-danger">
+                                <%= error %>
+                            </div>
+                        <% } %>
+                        
+                        <% if (typeof success !== 'undefined' && success) { %>
+                            <div class="alert alert-success">
+                                Birthday added successfully!
+                            </div>
+                        <% } %>
+                        
+                        <% if (birthdays && birthdays.length > 0) { %>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Date of Birth</th>
+                                            <th>Next Birthday</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% birthdays.forEach(birthday => { %>
+                                            <tr>
+                                                <td><%= birthday.username %></td>
+                                                <td><%= birthday.email %></td>
+                                                <td><%= new Date(birthday.dateOfBirth).toLocaleDateString() %></td>
+                                                <td><%= getNextBirthday(birthday.dateOfBirth) %></td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <% } else { %>
+                            <div class="alert alert-info">
+                                No birthdays found. <a href="/">Add a birthday</a> to get started.
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="/js/main.js"></script>
+    
+    <script>
+        function getNextBirthday(dateOfBirth) {
+            const today = new Date();
+            const birth = new Date(dateOfBirth);
+            
+            // Create next birthday date for this year
+            const nextBirthday = new Date(today.getFullYear(), birth.getMonth(), birth.getDate());
+            
+            // If the birthday has already occurred this year, set for next year
+            if (today > nextBirthday) {
+                nextBirthday.setFullYear(today.getFullYear() + 1);
+            }
+            
+            // Calculate days until birthday
+            const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+            const daysUntil = Math.round((nextBirthday - today) / oneDay);
+            
+            if (daysUntil === 0) {
+                return "Today!";
+            } else if (daysUntil === 1) {
+                return "Tomorrow!";
+            } else {
+                return `In ${daysUntil} days`;
+            }
+        }
+    </script>
+</body>
+</html>
