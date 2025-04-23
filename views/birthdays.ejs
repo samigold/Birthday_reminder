@@ -67,32 +67,5 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="/js/main.js"></script>
-    
-    <script>
-        function getNextBirthday(dateOfBirth) {
-            const today = new Date();
-            const birth = new Date(dateOfBirth);
-            
-            // Create next birthday date for this year
-            const nextBirthday = new Date(today.getFullYear(), birth.getMonth(), birth.getDate());
-            
-            // If the birthday has already occurred this year, set for next year
-            if (today > nextBirthday) {
-                nextBirthday.setFullYear(today.getFullYear() + 1);
-            }
-            
-            // Calculate days until birthday
-            const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
-            const daysUntil = Math.round((nextBirthday - today) / oneDay);
-            
-            if (daysUntil === 0) {
-                return "Today!";
-            } else if (daysUntil === 1) {
-                return "Tomorrow!";
-            } else {
-                return `In ${daysUntil} days`;
-            }
-        }
-    </script>
 </body>
 </html>

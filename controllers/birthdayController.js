@@ -20,6 +20,8 @@ exports.addBirthday = async (req, res) => {
     try {
         const { username, email, dateOfBirth } = req.body;
         
+        console.log('Form data received:', { username, email, dateOfBirth });
+        
         // Create new birthday record
         const birthday = new Birthday({
             username,
@@ -27,12 +29,16 @@ exports.addBirthday = async (req, res) => {
             dateOfBirth
         });
         
+        console.log('Birthday object created:', birthday);
+        
         await birthday.save();
+        console.log('Birthday saved successfully');
         
         res.redirect('/birthdays?success=true');
     } catch (error) {
-        console.error('Error adding birthday:', error);
-        res.status(500).render('index', { error: 'Failed to add birthday.' });
+        console.error('Error adding birthday. Details:', error.message);
+        console.error('Full error:', error);
+        res.status(500).render('index', { error: `Failed to add birthday: ${error.message}` });
     }
 };
 
@@ -40,7 +46,38 @@ exports.addBirthday = async (req, res) => {
 exports.getAllBirthdays = async (req, res) => {
     try {
         const birthdays = await Birthday.find().sort({ username: 1 });
-        res.render('birthdays', { birthdays });
+        
+        // Include success message if query parameter exists
+        const success = req.query.success === 'true';
+        
+        res.render('birthdays', { 
+            birthdays,
+            success,
+            getNextBirthday: function(dateOfBirth) {
+                const today = new Date();
+                const birth = new Date(dateOfBirth);
+                
+                // Create next birthday date for this year
+                const nextBirthday = new Date(today.getFullYear(), birth.getMonth(), birth.getDate());
+                
+                // If the birthday has already occurred this year, set for next year
+                if (today > nextBirthday) {
+                    nextBirthday.setFullYear(today.getFullYear() + 1);
+                }
+                
+                // Calculate days until birthday
+                const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+                const daysUntil = Math.round((nextBirthday - today) / oneDay);
+                
+                if (daysUntil === 0) {
+                    return "Today!";
+                } else if (daysUntil === 1) {
+                    return "Tomorrow!";
+                } else {
+                    return `In ${daysUntil} days`;
+                }
+            }
+        });
     } catch (error) {
         console.error('Error retrieving birthdays:', error);
         res.status(500).render('birthdays', { 
